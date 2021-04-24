@@ -116,7 +116,6 @@ export interface IPtyService {
 	readonly onPtyHostUnresponsive?: Event<void>;
 	readonly onPtyHostResponsive?: Event<void>;
 	readonly onProcessData: Event<{ id: number, event: IProcessDataEvent | string }>;
-	readonly onProcessBinary: Event<{ id: number, event: string }>;
 	readonly onProcessExit: Event<{ id: number, event: number | undefined }>;
 	readonly onProcessReady: Event<{ id: number, event: { pid: number, cwd: string } }>;
 	readonly onProcessTitleChanged: Event<{ id: number, event: string }>;
@@ -201,6 +200,11 @@ export interface IShellLaunchConfig {
 	 * The name of the terminal, if this is not set the name of the process will be used.
 	 */
 	name?: string;
+
+	/**
+	 * An string to follow the name of the terminal with, indicating a special kind of terminal
+	 */
+	description?: string;
 
 	/**
 	 * The shell executable (bash, cmd, etc.).

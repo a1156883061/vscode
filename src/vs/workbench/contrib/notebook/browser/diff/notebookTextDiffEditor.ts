@@ -285,7 +285,7 @@ export class NotebookTextDiffEditor extends EditorPane implements INotebookTextD
 		}
 	}
 
-	async override setInput(input: NotebookDiffEditorInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	override async setInput(input: NotebookDiffEditorInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 
 		const model = await input.resolve();
@@ -371,7 +371,7 @@ export class NotebookTextDiffEditor extends EditorPane implements INotebookTextD
 		outputNodeLeftPadding: 32,
 		previewNodePadding: MARKDOWN_PREVIEW_PADDING,
 		leftMargin: 0,
-		cellMargin: 0,
+		rightMargin: 0,
 		runGutter: 0
 	};
 
@@ -483,7 +483,28 @@ export class NotebookTextDiffEditor extends EditorPane implements INotebookTextD
 		}
 	}
 
-	scheduleOutputHeightAck() { }
+	scheduleOutputHeightAck(cellInfo: IDiffCellInfo, outputId: string, height: number) {
+		const diffElement = cellInfo.diffElement;
+		// const activeWebview = diffSide === DiffSide.Modified ? this._modifiedWebview : this._originalWebview;
+		let diffSide = DiffSide.Original;
+
+		if (diffElement instanceof SideBySideDiffElementViewModel) {
+			const info = CellUri.parse(cellInfo.cellUri);
+			if (!info) {
+				return;
+			}
+
+			diffSide = info.notebook.toString() === this._model?.original.resource.toString() ? DiffSide.Original : DiffSide.Modified;
+		} else {
+			diffSide = diffElement.type === 'insert' ? DiffSide.Modified : DiffSide.Original;
+		}
+
+		const webview = diffSide === DiffSide.Modified ? this._modifiedWebview : this._originalWebview;
+
+		DOM.scheduleAtNextAnimationFrame(() => {
+			webview?.ackHeight(cellInfo.cellId, outputId, height);
+		}, 10);
+	}
 
 	private _computeModifiedLCS(change: IDiffChange, originalModel: NotebookTextModel, modifiedModel: NotebookTextModel) {
 		const result: DiffElementViewModelBase[] = [];

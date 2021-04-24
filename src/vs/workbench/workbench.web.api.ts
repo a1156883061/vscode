@@ -6,7 +6,6 @@
 import 'vs/workbench/workbench.web.main';
 import { main } from 'vs/workbench/browser/web.main';
 import { UriComponents, URI } from 'vs/base/common/uri';
-import { IFileSystemProvider, FileSystemProviderCapabilities, IFileChange, FileChangeType } from 'vs/platform/files/common/files';
 import { IWebSocketFactory, IWebSocket } from 'vs/platform/remote/browser/browserSocketFactory';
 import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IURLCallbackProvider } from 'vs/workbench/services/url/browser/urlService';
@@ -27,7 +26,7 @@ interface IResourceUriProvider {
 
 interface IStaticExtension {
 	packageJSON: IExtensionManifest;
-	extensionLocation: URI;
+	extensionLocation: UriComponents;
 	isBuiltin?: boolean;
 }
 
@@ -411,12 +410,31 @@ interface IWorkbenchConstructionOptions {
 	 */
 	readonly logLevel?: LogLevel;
 
+	//#endregion
+
+	//#region development options
+
+	readonly developmentOptions?: IDevelopmentOptions;
+
+	//#endregion
+
+}
+
+interface IDevelopmentOptions {
+	/**
+	 * Location of a module containing extension tests to run once the workbench is open.
+	 */
+	readonly extensionTestsPath?: UriComponents;
+
+	/**
+	 * Add extensions under development.
+	 */
+	readonly extensions?: ReadonlyArray<IStaticExtension>;
+
 	/**
 	 * Whether to enable the smoke test driver.
 	 */
-	readonly driver?: boolean;
-
-	//#endregion
+	readonly enableSmokeTestDriver?: boolean;
 }
 
 interface IPerformanceMark {
@@ -566,12 +584,6 @@ export {
 	IWorkspace,
 	IWorkspaceProvider,
 
-	// FileSystem
-	IFileSystemProvider,
-	FileSystemProviderCapabilities,
-	IFileChange,
-	FileChangeType,
-
 	// WebSockets
 	IWebSocketFactory,
 	IWebSocket,
@@ -632,7 +644,10 @@ export {
 
 	// Env
 	IPerformanceMark,
-	env
+	env,
+
+	// Development
+	IDevelopmentOptions
 };
 
 //#endregion

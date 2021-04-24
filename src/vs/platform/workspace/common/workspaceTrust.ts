@@ -17,7 +17,7 @@ export function workspaceTrustToString(trustState: boolean) {
 	if (trustState) {
 		return localize('trusted', "Trusted");
 	} else {
-		return localize('untrusted', "Untrusted");
+		return localize('untrusted', "Restricted Mode");
 	}
 }
 
@@ -47,7 +47,6 @@ export interface IWorkspaceTrustManagementService {
 	canSetWorkspaceTrust(): boolean;
 	setWorkspaceTrust(trusted: boolean): void;
 	getFolderTrustInfo(folder: URI): IWorkspaceTrustUriInfo;
-	setOpenEditors(openEditors: URI[]): void;
 	setFoldersTrust(folders: URI[], trusted: boolean): void;
 	getTrustedFolders(): URI[];
 	setTrustedFolders(folders: URI[]): void;
